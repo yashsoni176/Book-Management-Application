@@ -1,5 +1,6 @@
 import flask
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
+from flask_session import Session
 import sqlite3
 
 conn = sqlite3.connect("book.db", check_same_thread=False)
@@ -26,6 +27,10 @@ else:
 print("Table has created")
 
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+
 
 @app.route("/")
 def index():
@@ -58,11 +63,15 @@ def userlogin():
         cursor.execute(query)
         result = cursor.fetchall()
         print(result)
-        if len(result) == 0:
-            print("Invalid USER")
-        else:
-            return redirect("dashboard")
+        if len(result) > 0:
+            for i in result:
+                getname = i[1]
+                getid = i[0]
+                
+            session["name"] = getname
+            session["id"] = getid
 
+            return redirect("/dashboard")
     except Exception as e:
             print(e)
 
@@ -70,7 +79,10 @@ def userlogin():
 
 @app.route("/dashboard", methods = ['GET','POST'])
 def dashboard():
-    return render_template("/dashboard.html")
+    if not session.get("name"):
+        return redirect("/userlogin")
+    else:
+        return render_template("/dashboard.html")
 
 
 @app.route("/register", methods = ['GET','POST'])
@@ -149,23 +161,26 @@ def search():
 
 @app.route("/usersearch", methods =['GET','POST'])
 def usersearch():
-    if request.method == "POST":
-        getname = request.form["name"]
-        print(getname)
-        try:
-            query = "SELECT * FROM BOOK WHERE name='"+getname+"'"
-            print(query)
-            cursor.execute(query)
-            print("SUCCESSFULLY SELECTED!")
-            result = cursor.fetchall()
-            print(result)
-            if len(result) == 0:
-                print("Invalid Book Name")
-            else:
-                return render_template("usersearch.html", books=result, status = True)
+    if not session.get("name"):
+        return redirect("/userlogin")
+    else:
+        if request.method == "POST":
+            getname = request.form["name"]
+            print(getname)
+            try:
+                query = "SELECT * FROM BOOK WHERE name='"+getname+"'"
+                print(query)
+                cursor.execute(query)
+                print("SUCCESSFULLY SELECTED!")
+                result = cursor.fetchall()
+                print(result)
+                if len(result) == 0:
+                    print("Invalid Book Name")
+                else:
+                    return render_template("usersearch.html", books=result, status = True)
 
-        except Exception as e:
-            print(e)
+            except Exception as e:
+                print(e)
 
     return render_template("usersearch.html", books=[], status = False)
 
@@ -178,10 +193,13 @@ def viewall():
 
 @app.route("/userviewall")
 def userviewall():
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM BOOK")
-    result = cursor.fetchall()
-    return render_template("userviewall.html",books=result)
+    if not session.get("name"):
+        return redirect("/userlogin")
+    else:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM BOOK")
+        result = cursor.fetchall()
+        return render_template("userviewall.html",books=result)
 
 @app.route("/delete", methods =['GET','POST'])
 def delete():
@@ -235,6 +253,15 @@ def vieupdate():
         print(e)
 
     return render_template("/viewupdate.html")
+
+@app.route("/userlogout", methods=["GET", "POST"])
+def userlogout():
+
+    if not session.get("name"):
+        return redirect("/userlogin")
+    else:
+        session["name"] = None
+        return redirect("/")
 
 if __name__ == "__main__":
     app.run(debug=True)
