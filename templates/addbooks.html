@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h3 style="text-align: center; margin-top:1% ; color: white;">ADD BOOKS</h3>
+    <hr style="color: white;">
+    <div class="container">
+        <div class="row">
+            <div class="col col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12"></div>
+            <form action="/addbooks" method="post">
+                <table class="table table-borderless" style="color: white;">
+                    <tr>
+                        <td>Name </td>
+                        <td><input name="name" type="text" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td>Author </td>
+                        <td><input name="author" type="text" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td>Category </td>
+                        <td><input name="category" type="text" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td>Price </td>
+                        <td><input name="price" type="number" class="form-control"></td>
+                    </tr>
+                    <tr>
+                        <td>Publisher </td>
+                        <td><input name="publisher" type="text" class="form-control"></td>
+                    </tr>
+                        <td></td>
+                        <td><button class="btn btn-success" type="submit">SUBMIT</button></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

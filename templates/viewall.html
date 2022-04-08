@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h3 style="text-align: center; margin-top: 1% ; color: white;">VIEW ALL BOOKS</h3>
+<hr style="color: white;">
+<div class="container">
+    <div class="row">
+        {% for i in books %}
+        <div class="col col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 col-xxl-3">
+            <div class="card" style="width: 16rem; margin-top: 1cm; border-radius: 20px;">
+                <img src="https://cdn3.iconfinder.com/data/icons/stay-home-activities-3/512/reading-_book-_student-_education-_avatar-_man-_people-512.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title"><center>{{i[1]}}</center></h5>
+                  <p class="card-text">Author : {{i[2]}}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Category : {{i[3]}}</li>
+                  <li class="list-group-item">Price : {{i[4]}}</li>
+                  <li class="list-group-item">Publisher : {{i[5]}}</li>
+                </ul>
+              </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
